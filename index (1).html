@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>///STATIC_VOID/// — You Were Not Supposed To Find This</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ========================================
+       CSS VARIABLES — Color System
+    ======================================== */
+    :root {
+      --black: #000000;
+      --olive: #3A5F0B;
+      --neon: #00FF9C;
+      --dark: #1A1A1A;
+      --offwhite: #F5F5F5;
+      --dim: #888;
+      --red-glitch: #FF003C;
+      --blue-glitch: #00CFFF;
+    }
+
+    /* ========================================
+       RESET & BASE
+    ======================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+
+    body {
+      background: var(--black);
+      color: var(--offwhite);
+      font-family: 'Share Tech Mono', monospace;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* ========================================
+       CUSTOM CURSOR
+    ======================================== */
+    #cursor {
+      position: fixed;
+      width: 16px; height: 16px;
+      border: 2px solid var(--neon);
+      border-radius: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width .15s, height .15s, border-color .15s;
+      mix-blend-mode: difference;
+    }
+    #cursor-trail {
+      position: fixed;
+      width: 6px; height: 6px;
+      background: var(--neon);
+      border-radius: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      opacity: .5;
+      transition: opacity .3s;
+    }
+    body:has(a:hover) #cursor,
+    body:has(button:hover) #cursor {
+      width: 28px; height: 28px;
+      border-color: var(--red-glitch);
+    }
+
+    /* ========================================
+       SCANLINE OVERLAY (always on)
+    ======================================== */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,.18) 3px,
+        rgba(0,0,0,.18) 4px
+      );
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* ========================================
+       NOISE GRAIN OVERLAY
+    ======================================== */
+    #grain {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 8999;
+      opacity: .06;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+      animation: grainShift 0.4s steps(1) infinite;
+    }
+    @keyframes grainShift {
+      0%   { background-position: 0 0; }
+      25%  { background-position: -40px 20px; }
+      50%  { background-position: 30px -15px; }
+      75%  { background-position: -20px -30px; }
+      100% { background-position: 10px 10px; }
+    }
+
+    /* ========================================
+       LOADING SCREEN
+    ======================================== */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--black);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity .8s ease, visibility .8s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-text {
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--neon);
+      font-size: clamp(11px, 1.5vw, 14px);
+      letter-spacing: .2em;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .loader-bar-wrap {
+      width: 260px;
+      height: 2px;
+      background: #111;
+      position: relative;
+    }
+    .loader-bar {
+      height: 100%;
+      background: var(--neon);
+      width: 0;
+      animation: loadBar 2.4s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes loadBar { to { width: 100%; } }
+
+    .loader-code {
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--dim);
+      font-size: 10px;
+      letter-spacing: .15em;
+      animation: codeScroll 2.5s linear;
+    }
+
+    /* ========================================
+       NAVIGATION
+    ======================================== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 18px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(0,0,0,.9), transparent);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--neon);
+      letter-spacing: .3em;
+      text-decoration: none;
+      position: relative;
+    }
+    .nav-logo::before {
+      content: '///';
+      color: var(--red-glitch);
+      margin-right: 4px;
+      animation: blink 1.8s step-end infinite;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--neon); }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ========================================
+       SECTION BASE
+    ======================================== */
+    section { position: relative; overflow: hidden; }
+
+    /* ========================================
+       HERO SECTION
+    ======================================== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: var(--black);
+    }
+
+    /* Animated grid background */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,156,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,156,.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridPulse 8s ease-in-out infinite;
+    }
+    @keyframes gridPulse {
+      0%, 100% { opacity: .4; }
+      50% { opacity: 1; }
+    }
+
+    /* Vignette */
+    .hero-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 30%, var(--black) 80%);
+    }
+
+    /* Glitch horizontal stripes */
+    .glitch-band {
+      position: absolute;
+      left: 0; right: 0;
+      height: 3px;
+      background: var(--neon);
+      opacity: 0;
+      animation: glitchBand 5s infinite;
+    }
+    .glitch-band:nth-child(2) { animation-delay: 1.3s; background: var(--red-glitch); }
+    .glitch-band:nth-child(3) { animation-delay: 2.7s; background: var(--blue-glitch); }
+    @keyframes glitchBand {
+      0%, 90%, 100% { opacity: 0; top: 50%; }
+      92% { opacity: .8; top: 30%; height: 2px; }
+      94% { top: 70%; height: 5px; }
+      96% { opacity: .4; top: 20%; height: 1px; }
+      98% { opacity: 0; }
+    }
+
+    /* HERO CONTENT */
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .hero-tag {
+      font-size: 11px;
+      letter-spacing: .4em;
+      color: var(--neon);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp .6s ease .5s forwards;
+    }
+    .hero-tag::before { content: '[ '; }
+    .hero-tag::after  { content: ' ]'; }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 14vw, 180px);
+      line-height: .9;
+      color: var(--offwhite);
+      letter-spacing: -.02em;
+      position: relative;
+      opacity: 0;
+      animation: fadeUp .8s ease .8s forwards;
+    }
+
+    /* Glitch layers on title */
+    .hero-title .glitch-layer-r,
+    .hero-title .glitch-layer-b {
+      position: absolute;
+      inset: 0;
+      color: transparent;
+      -webkit-text-stroke: 0;
+    }
+    .hero-title .glitch-layer-r {
+      color: var(--red-glitch);
+      clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+      animation: glitchR 4s infinite;
+      opacity: .7;
+    }
+    .hero-title .glitch-layer-b {
+      color: var(--blue-glitch);
+      clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%);
+      animation: glitchB 4s infinite;
+      opacity: .7;
+    }
+    @keyframes glitchR {
+      0%, 85%, 100% { transform: translateX(0); opacity: 0; }
+      87% { transform: translateX(-6px); opacity: .8; }
+      89% { transform: translateX(4px); opacity: .6; }
+      91% { transform: translateX(0); opacity: 0; }
+    }
+    @keyframes glitchB {
+      0%, 80%, 100% { transform: translateX(0); opacity: 0; }
+      82% { transform: translateX(5px); opacity: .7; }
+      84% { transform: translateX(-3px); opacity: .5; }
+      86% { transform: translateX(0); opacity: 0; }
+    }
+
+    .hero-subtitle {
+      font-size: clamp(13px, 1.8vw, 17px);
+      color: var(--dim);
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeUp .6s ease 1.2s forwards;
+    }
+    .hero-subtitle span {
+      color: var(--neon);
+      animation: blink 2s step-end infinite;
+    }
+
+    /* CHARACTERS STAGE */
+    .characters-stage {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(20px, 4vw, 80px);
+      margin-top: 40px;
+      padding: 0 20px;
+    }
+
+    /* Individual character SVG figures */
+    .char-figure {
+      position: relative;
+      opacity: 0;
+      animation: charReveal 1s ease forwards;
+      cursor: pointer;
+      transition: transform .3s ease;
+    }
+    .char-figure:hover { transform: translateY(-12px) scale(1.03); }
+    .char-figure:nth-child(1) { animation-delay: 1.4s; }
+    .char-figure:nth-child(2) { animation-delay: 1s; z-index: 2; }
+    .char-figure:nth-child(3) { animation-delay: 1.6s; }
+
+    @keyframes charReveal {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating idle animation per character */
+    .char-figure svg { animation: float 4s ease-in-out infinite; }
+    .char-figure:nth-child(1) svg { animation-delay: .5s; }
+    .char-figure:nth-child(3) svg { animation-delay: 1s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Character name badge */
+    .char-label {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      letter-spacing: .3em;
+      color: var(--neon);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .char-figure:hover .char-label { opacity: 1; }
+
+    /* Glitch on hover for characters */
+    .char-figure:hover svg {
+      animation: charGlitch .3s steps(2) infinite, float 4s ease-in-out infinite;
+    }
+    @keyframes charGlitch {
+      0%   { filter: none; }
+      25%  { filter: hue-rotate(90deg) saturate(200%); transform: translateX(-3px); }
+      50%  { filter: none; }
+      75%  { filter: hue-rotate(-90deg) brightness(150%); transform: translateX(3px); }
+      100% { filter: none; }
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeIn .6s ease 2.5s forwards;
+    }
+    .scroll-hint span {
+      font-size: 9px;
+      letter-spacing: .4em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+    .scroll-arrow {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--neon), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: .3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* ========================================
+       TICKER / MARQUEE
+    ======================================== */
+    .ticker {
+      background: var(--neon);
+      padding: 10px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      z-index: 20;
+    }
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 18s linear infinite;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: .3em;
+      color: var(--black);
+    }
+    .ticker-inner span { margin: 0 60px; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ========================================
+       LORE / STORY SECTION
+    ======================================== */
+    #lore {
+      min-height: 100vh;
+      background: var(--dark);
+      padding: 120px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lore-container {
+      max-width: 860px;
+      width: 100%;
+      position: relative;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: .5em;
+      color: var(--neon);
+      text-transform: uppercase;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--neon), transparent);
+    }
+
+    .lore-file {
+      background: rgba(0,255,156,.04);
+      border: 1px solid rgba(0,255,156,.12);
+      padding: 40px;
+      position: relative;
+      margin-bottom: 32px;
+    }
+    .lore-file::before {
+      content: attr(data-id);
+      position: absolute;
+      top: -1px; left: 24px;
+      background: var(--dark);
+      padding: 0 8px;
+      font-size: 9px;
+      letter-spacing: .3em;
+      color: var(--neon);
+    }
+
+    .redacted {
+      background: var(--offwhite);
+      color: var(--offwhite);
+      padding: 0 4px;
+      user-select: none;
+      cursor: not-allowed;
+      transition: background .3s, color .3s;
+      display: inline-block;
+    }
+    .redacted:hover {
+      background: var(--red-glitch);
+      color: var(--black);
+    }
+
+    .lore-text {
+      font-size: clamp(13px, 1.5vw, 15px);
+      line-height: 2;
+      color: rgba(245,245,245,.7);
+      letter-spacing: .05em;
+    }
+    .lore-text strong { color: var(--offwhite); }
+    .lore-text .highlight { color: var(--neon); }
+
+    .corrupt-text {
+      color: var(--dim);
+      font-size: 11px;
+      letter-spacing: .15em;
+      animation: corrupt 3s step-end infinite;
+    }
+    @keyframes corrupt {
+      0%   { content: ''; }
+      20%  { opacity: .3; }
+      40%  { opacity: 1; }
+      60%  { opacity: .1; }
+      80%  { opacity: .8; }
+      100% { opacity: 1; }
+    }
+
+    /* ========================================
+       MEMBERS SECTION
+    ======================================== */
+    #members {
+      padding: 120px 40px;
+      background: var(--black);
+    }
+
+    .members-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+      margin-top: 60px;
+    }
+
+    .member-card {
+      position: relative;
+      background: var(--dark);
+      padding: 48px 32px 40px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: background .3s;
+      border: 1px solid #111;
+    }
+    .member-card:hover { background: #111; }
+
+    /* Accent corner */
+    .member-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      border-top: 2px solid var(--neon);
+      border-left: 2px solid var(--neon);
+      transition: width .3s, height .3s;
+    }
+    .member-card:hover::before { width: 60px; height: 60px; }
+
+    .member-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 40px; height: 40px;
+      border-bottom: 2px solid rgba(0,255,156,.3);
+      border-right: 2px solid rgba(0,255,156,.3);
+      transition: width .3s, height .3s;
+    }
+    .member-card:hover::after { width: 60px; height: 60px; }
+
+    .member-id {
+      font-size: 9px;
+      letter-spacing: .5em;
+      color: var(--dim);
+      margin-bottom: 24px;
+    }
+
+    .member-avatar {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .member-avatar svg { width: 100%; height: 100%; }
+
+    /* Glitch effect on member card hover */
+    .member-card:hover .member-avatar svg {
+      animation: avatarGlitch .4s steps(2) infinite;
+    }
+    @keyframes avatarGlitch {
+      0%  { filter: none; transform: none; }
+      33% { filter: hue-rotate(120deg); transform: translateX(-2px); }
+      66% { filter: brightness(200%); transform: translateX(2px); }
+      100%{ filter: none; transform: none; }
+    }
+
+    .member-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      letter-spacing: .05em;
+      color: var(--offwhite);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .member-role {
+      font-size: 10px;
+      letter-spacing: .4em;
+      color: var(--neon);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .member-bio {
+      font-size: 12px;
+      line-height: 1.9;
+      color: rgba(245,245,245,.5);
+      letter-spacing: .05em;
+    }
+
+    .member-status {
+      margin-top: 24px;
+      font-size: 9px;
+      letter-spacing: .35em;
+      color: var(--red-glitch);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .member-status::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--red-glitch);
+      border-radius: 50%;
+      animation: blink 1.2s step-end infinite;
+    }
+
+    /* ========================================
+       AUDIO SECTION
+    ======================================== */
+    #audio-section {
+      padding: 120px 40px;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .audio-container {
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .audio-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 8vw, 96px);
+      color: var(--offwhite);
+      letter-spacing: .05em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .audio-subtitle {
+      font-size: 11px;
+      letter-spacing: .4em;
+      color: var(--dim);
+      margin-bottom: 60px;
+    }
+
+    /* Visualizer */
+    .visualizer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+      height: 80px;
+      margin-bottom: 40px;
+    }
+    .viz-bar {
+      width: 6px;
+      background: var(--neon);
+      border-radius: 2px 2px 0 0;
+      transform-origin: bottom;
+      transition: height .1s;
+      opacity: .7;
+    }
+    .viz-bar.active {
+      animation: vizPulse var(--d, .6s) ease-in-out infinite alternate;
+    }
+    @keyframes vizPulse {
+      from { height: 6px; opacity: .4; }
+      to   { height: var(--h, 40px); opacity: 1; }
+    }
+
+    .play-btn {
+      width: 72px; height: 72px;
+      border: 2px solid var(--neon);
+      background: transparent;
+      color: var(--neon);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: .3em;
+      cursor: none;
+      position: relative;
+      overflow: hidden;
+      transition: background .3s, color .3s;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-btn:hover {
+      background: var(--neon);
+      color: var(--black);
+    }
+    .play-btn::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border: 1px solid rgba(0,255,156,.3);
+      transform: scale(1.1);
+      transition: transform .3s;
+    }
+    .play-btn:hover::before { transform: scale(1.3); opacity: 0; }
+
+    .audio-note {
+      margin-top: 24px;
+      font-size: 10px;
+      letter-spacing: .2em;
+      color: var(--dim);
+    }
+
+    /* ========================================
+       EASTER EGG / INTERACTIVE SECTION
+    ======================================== */
+    #secrets {
+      padding: 120px 40px;
+      background: var(--black);
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .secrets-container {
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+    }
+
+    .terminal-window {
+      border: 1px solid rgba(0,255,156,.2);
+      background: #050505;
+      padding: 0;
+      position: relative;
+    }
+    .terminal-bar {
+      background: rgba(0,255,156,.08);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(0,255,156,.1);
+    }
+    .t-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--red-glitch);
+    }
+    .t-dot:nth-child(2) { background: #FFB800; }
+    .t-dot:nth-child(3) { background: var(--neon); }
+    .terminal-title {
+      margin-left: 8px;
+      font-size: 10px;
+      letter-spacing: .3em;
+      color: var(--dim);
+    }
+    .terminal-body {
+      padding: 32px;
+      min-height: 260px;
+    }
+
+    .t-line {
+      font-size: 13px;
+      line-height: 2;
+      color: rgba(0,255,156,.7);
+      letter-spacing: .08em;
+    }
+    .t-line.dim { color: var(--dim); }
+    .t-line.red { color: var(--red-glitch); }
+    .t-line.white { color: var(--offwhite); }
+
+    .t-cursor {
+      display: inline-block;
+      width: 9px; height: 14px;
+      background: var(--neon);
+      vertical-align: middle;
+      animation: blink .8s step-end infinite;
+      margin-left: 2px;
+    }
+
+    /* Hidden easter egg button */
+    .secret-btn {
+      position: absolute;
+      width: 20px; height: 20px;
+      background: transparent;
+      border: none;
+      cursor: none;
+      transition: opacity .3s;
+    }
+    .secret-btn:hover { opacity: .5; }
+
+    /* Message that appears on interaction */
+    #hidden-msg {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(.8);
+      background: var(--black);
+      border: 1px solid var(--red-glitch);
+      padding: 40px 60px;
+      text-align: center;
+      z-index: 5000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all .4s ease;
+    }
+    #hidden-msg.show {
+      opacity: 1;
+      pointer-events: all;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    #hidden-msg p {
+      font-size: clamp(14px, 2vw, 18px);
+      letter-spacing: .2em;
+      color: var(--red-glitch);
+      margin-bottom: 16px;
+    }
+    #hidden-msg small {
+      font-size: 10px;
+      color: var(--dim);
+      letter-spacing: .3em;
+      display: block;
+      margin-bottom: 24px;
+    }
+    #close-msg {
+      background: transparent;
+      border: 1px solid var(--dim);
+      color: var(--dim);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .3em;
+      padding: 8px 20px;
+      cursor: none;
+      transition: all .2s;
+    }
+    #close-msg:hover { border-color: var(--neon); color: var(--neon); }
+
+    /* ========================================
+       FINAL / COMING SOON SECTION
+    ======================================== */
+    #finale {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Big circle glow */
+    .finale-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,255,156,.06) 0%, transparent 70%);
+      animation: glowPulse 4s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%, 100% { transform: scale(1); opacity: .5; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* Horizontal lines */
+    .finale-lines {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .finale-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(0,255,156,.15), transparent);
+      animation: lineScan 6s ease-in-out infinite;
+    }
+    .finale-line:nth-child(1) { top: 25%; animation-delay: 0s; }
+    .finale-line:nth-child(2) { top: 50%; animation-delay: 1s; }
+    .finale-line:nth-child(3) { top: 75%; animation-delay: 2s; }
+    @keyframes lineScan {
+      0%, 100% { opacity: 0; transform: scaleX(0); }
+      50% { opacity: 1; transform: scaleX(1); }
+    }
+
+    .finale-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .finale-pre {
+      font-size: 11px;
+      letter-spacing: .5em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeIn 1s ease .3s both;
+    }
+
+    .coming-soon {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 18vw, 240px);
+      line-height: .85;
+      letter-spacing: -.01em;
+      color: var(--offwhite);
+      position: relative;
+      animation: fadeUp 1s ease .6s both;
+    }
+
+    /* Glitch on COMING SOON */
+    .coming-soon::before {
+      content: 'COMING SOON';
+      position: absolute;
+      inset: 0;
+      color: var(--red-glitch);
+      clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+      animation: csGlitch 6s infinite;
+    }
+    .coming-soon::after {
+      content: 'COMING SOON';
+      position: absolute;
+      inset: 0;
+      color: var(--blue-glitch);
+      clip-path: polygon(0 55%, 100% 55%, 100% 70%, 0 70%);
+      animation: csGlitch 6s 1.5s infinite;
+    }
+    @keyframes csGlitch {
+      0%, 92%, 100% { transform: translateX(0); opacity: 0; }
+      94% { transform: translateX(-8px); opacity: .9; }
+      96% { transform: translateX(5px); opacity: .7; }
+      98% { transform: translateX(0); opacity: 0; }
+    }
+
+    .finale-sub {
+      font-size: clamp(13px, 1.8vw, 18px);
+      letter-spacing: .35em;
+      color: var(--neon);
+      text-transform: uppercase;
+      margin-top: 32px;
+      animation: fadeUp 1s ease .9s both;
+    }
+
+    .finale-sub2 {
+      font-size: 11px;
+      letter-spacing: .25em;
+      color: var(--dim);
+      margin-top: 16px;
+      animation: fadeUp 1s ease 1.1s both;
+    }
+
+    /* Email subscribe */
+    .subscribe-form {
+      margin-top: 56px;
+      display: flex;
+      gap: 0;
+      max-width: 440px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeUp 1s ease 1.3s both;
+    }
+    .subscribe-input {
+      flex: 1;
+      background: #0a0a0a;
+      border: 1px solid rgba(0,255,156,.2);
+      border-right: none;
+      color: var(--offwhite);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: .1em;
+      padding: 14px 20px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .subscribe-input:focus { border-color: var(--neon); }
+    .subscribe-input::placeholder { color: var(--dim); }
+    .subscribe-btn {
+      background: var(--neon);
+      border: none;
+      color: var(--black);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: .3em;
+      padding: 14px 28px;
+      cursor: none;
+      transition: background .2s, color .2s;
+      white-space: nowrap;
+    }
+    .subscribe-btn:hover { background: var(--offwhite); }
+
+    /* Footer */
+    .finale-footer {
+      position: absolute;
+      bottom: 32px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      font-size: 10px;
+      letter-spacing: .25em;
+      color: var(--dim);
+      z-index: 10;
+    }
+    .finale-footer a { color: var(--dim); text-decoration: none; transition: color .2s; }
+    .finale-footer a:hover { color: var(--neon); }
+
+    /* ========================================
+       UTILITY ANIMATIONS
+    ======================================== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Scroll reveal utility */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ========================================
+       RESPONSIVE
+    ======================================== */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      #lore, #members, #audio-section, #secrets { padding: 80px 20px; }
+      .lore-file { padding: 28px 20px; }
+      .characters-stage { gap: 16px; }
+      .subscribe-form { flex-direction: column; }
+      .subscribe-input { border-right: 1px solid rgba(0,255,156,.2); }
+      .finale-footer { flex-direction: column; gap: 16px; font-size: 9px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==========================================
+     GRAIN OVERLAY
+========================================== -->
+<div id="grain"></div>
+
+<!-- ==========================================
+     CUSTOM CURSOR
+========================================== -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- ==========================================
+     LOADING SCREEN
+========================================== -->
+<div id="loader">
+  <div class="loader-text">INITIALIZING SIGNAL INTERCEPT…</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-code">ACCESS CODE: ███-STATIC-V0ID-███ // BREACH DETECTED</div>
+</div>
+
+<!-- ==========================================
+     NAVIGATION
+========================================== -->
+<nav>
+  <a href="#hero" class="nav-logo">STATIC_VOID</a>
+  <ul class="nav-links">
+    <li><a href="#lore">LORE</a></li>
+    <li><a href="#members">MEMBERS</a></li>
+    <li><a href="#audio-section">SIGNAL</a></li>
+    <li><a href="#secrets">DECRYPT</a></li>
+  </ul>
+</nav>
+
+<!-- ==========================================
+     HERO SECTION
+========================================== -->
+<section id="hero">
+  <!-- Animated grid -->
+  <div class="hero-grid"></div>
+  <!-- Vignette -->
+  <div class="hero-vignette"></div>
+  <!-- Glitch bands -->
+  <div class="glitch-band"></div>
+  <div class="glitch-band"></div>
+  <div class="glitch-band"></div>
+
+  <!-- Characters stage -->
+  <div class="characters-stage">
+
+    <!-- GUITARIST (left) — CIRCUIT -->
+    <div class="char-figure" data-name="CIRCUIT">
+      <svg width="170" height="340" viewBox="0 0 170 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="fx-c">
+            <feGaussianBlur stdDeviation="3.5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <linearGradient id="leg-c" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1c1c1c"/>
+            <stop offset="100%" stop-color="#0a0a0a"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ground shadow -->
+        <ellipse cx="85" cy="336" rx="48" ry="5" fill="rgba(0,255,156,0.07)"/>
+
+        <!-- ── SHOES: chunky 2000s runner silhouette ── -->
+        <!-- left shoe -->
+        <path d="M48 302 L48 318 Q48 324 56 324 L82 324 Q90 324 92 318 L92 308 Z" fill="#111"/>
+        <path d="M50 308 L90 308 L90 312 L50 312 Z" fill="#00FF9C" opacity="0.9"/>
+        <path d="M58 312 L58 324" stroke="#222" stroke-width="1"/>
+        <path d="M68 312 L68 324" stroke="#222" stroke-width="1"/>
+        <path d="M78 312 L78 324" stroke="#222" stroke-width="1"/>
+        <!-- right shoe -->
+        <path d="M96 302 L96 318 Q96 324 104 324 L128 324 Q136 324 138 318 L138 308 Z" fill="#0d0d0d"/>
+        <path d="M98 308 L136 308 L136 312 L98 312 Z" fill="#3A5F0B" opacity="0.9"/>
+        <path d="M106 312 L106 324" stroke="#1a1a1a" stroke-width="1"/>
+        <path d="M116 312 L116 324" stroke="#1a1a1a" stroke-width="1"/>
+        <path d="M126 312 L126 324" stroke="#1a1a1a" stroke-width="1"/>
+        <!-- ankle/sock -->
+        <rect x="56" y="294" width="28" height="12" fill="#1a1a1a"/>
+        <rect x="102" y="294" width="28" height="12" fill="#1a1a1a"/>
+
+        <!-- ── PANTS: straight-leg baggy cargo ── -->
+        <!-- left leg -->
+        <path d="M56 220 L56 302 L84 302 L88 220 Z" fill="#1c1c1c"/>
+        <!-- right leg -->
+        <path d="M82 220 L118 220 L122 302 L90 302 Z" fill="#181818"/>
+        <!-- cargo pocket left -->
+        <rect x="58" y="248" width="22" height="28" rx="1" fill="#222" stroke="#2a2a2a" stroke-width="1"/>
+        <line x1="58" y1="262" x2="80" y2="262" stroke="#2a2a2a" stroke-width="1"/>
+        <!-- camo patches on pants (flat, graphic) -->
+        <rect x="60" y="250" width="7" height="5" fill="#2a3d10" opacity="0.6"/>
+        <rect x="70" y="256" width="5" height="7" fill="#2a3d10" opacity="0.4"/>
+        <rect x="95" y="252" width="8" height="5" fill="#2a3d10" opacity="0.5"/>
+        <rect x="108" y="262" width="6" height="6" fill="#2a3d10" opacity="0.4"/>
+        <!-- belt -->
+        <rect x="55" y="218" width="68" height="7" fill="#111"/>
+        <rect x="79" y="217" width="14" height="9" rx="1" fill="#333"/>
+        <rect x="82" y="219" width="8" height="5" rx="0.5" fill="#555"/>
+
+        <!-- ── TORSO: oversized technical jacket ── -->
+        <!-- main body -->
+        <path d="M46 130 Q40 135 38 145 L38 222 L134 222 L134 145 Q132 135 126 130 Z" fill="#141414"/>
+        <!-- jacket collar/lapel -->
+        <path d="M72 130 L72 155 L86 165 L100 155 L100 130 Z" fill="#0a0a0a"/>
+        <path d="M72 130 L62 148 L86 158 Z" fill="#1a1a1a"/>
+        <path d="M100 130 L110 148 L86 158 Z" fill="#171717"/>
+        <!-- left sleeve + arm -->
+        <path d="M38 145 Q20 140 10 160 L14 200 Q18 210 28 210 L42 210 L42 145 Z" fill="#141414"/>
+        <!-- right sleeve + arm angled up (guitarist pose) -->
+        <path d="M134 145 Q150 138 158 152 L162 185 Q160 198 150 200 L136 200 L134 145 Z" fill="#141414"/>
+        <!-- jacket seams -->
+        <line x1="86" y1="165" x2="86" y2="222" stroke="#1e1e1e" stroke-width="1.5"/>
+        <!-- left chest patch -->
+        <rect x="50" y="155" width="28" height="18" rx="1" fill="#0a0a0a" stroke="#222" stroke-width="1"/>
+        <text x="53" y="168" font-family="monospace" font-size="7" fill="#00FF9C" letter-spacing="1">CIRCUIT</text>
+        <!-- right chest patch / logo -->
+        <rect x="95" y="155" width="18" height="18" rx="1" fill="#00FF9C" opacity="0.9"/>
+        <text x="97" y="168" font-family="monospace" font-size="9" fill="#000" letter-spacing="0">///</text>
+        <!-- collar band -->
+        <rect x="70" y="124" width="32" height="10" rx="3" fill="#111"/>
+        <!-- left hand -->
+        <ellipse cx="22" cy="210" rx="10" ry="8" fill="#C8A878"/>
+        <!-- right hand -->
+        <ellipse cx="154" cy="195" rx="10" ry="8" fill="#C8A878"/>
+
+        <!-- ── GUITAR: sleek angular body ── -->
+        <g transform="rotate(-20 30 210)">
+          <!-- guitar body — angular LP-style -->
+          <path d="M4 175 Q0 165 6 155 L20 148 L38 148 Q50 148 54 162 L56 185 Q56 200 44 206 L22 210 Q8 208 4 198 Z" fill="#0d0d0d"/>
+          <path d="M6 158 L36 150 L52 168 L50 195 L26 205 L8 196 Z" fill="#111" opacity="0.5"/>
+          <!-- pickup -->
+          <rect x="18" y="168" width="26" height="8" rx="1" fill="#1a1a1a" stroke="#00FF9C" stroke-width="0.5"/>
+          <rect x="18" y="180" width="26" height="8" rx="1" fill="#1a1a1a" stroke="#00FF9C" stroke-width="0.5"/>
+          <!-- strings (neon) -->
+          <line x1="22" y1="145" x2="20" y2="210" stroke="#00FF9C" stroke-width="0.8" opacity="0.8" filter="url(#fx-c)"/>
+          <line x1="26" y1="145" x2="24" y2="210" stroke="#00FF9C" stroke-width="0.8" opacity="0.6"/>
+          <line x1="30" y1="145" x2="28" y2="210" stroke="#00FF9C" stroke-width="0.6" opacity="0.5"/>
+          <line x1="34" y1="145" x2="32" y2="210" stroke="#00CFFF" stroke-width="0.6" opacity="0.4"/>
+          <!-- neck -->
+          <rect x="20" y="100" width="12" height="50" rx="2" fill="#0a0a0a"/>
+          <!-- headstock -->
+          <path d="M18 100 L18 92 L32 88 L34 100 Z" fill="#111"/>
+          <!-- tuners -->
+          <circle cx="20" cy="90" r="2" fill="#333"/>
+          <circle cx="25" cy="89" r="2" fill="#333"/>
+          <circle cx="30" cy="89" r="2" fill="#333"/>
+          <!-- guitar outline glow -->
+          <path d="M4 175 Q0 165 6 155 L20 148 L38 148 Q50 148 54 162 L56 185 Q56 200 44 206 L22 210 Q8 208 4 198 Z" fill="none" stroke="#00FF9C" stroke-width="0.8" opacity="0.25" filter="url(#fx-c)"/>
+        </g>
+
+        <!-- ── HEAD: flat editorial style ── -->
+        <!-- neck -->
+        <rect x="78" y="104" width="20" height="30" fill="#C8A878"/>
+        <!-- face -->
+        <rect x="58" y="60" width="56" height="54" rx="4" fill="#C8A878"/>
+        <!-- flat top hair block -->
+        <rect x="54" y="42" width="64" height="26" rx="2" fill="#0a0a0a"/>
+        <rect x="54" y="56" width="64" height="8" fill="#0a0a0a"/>
+        <!-- side hair / fade -->
+        <rect x="54" y="60" width="8" height="44" fill="#0a0a0a"/>
+        <rect x="110" y="60" width="8" height="44" fill="#0a0a0a"/>
+        <!-- wraparound visor sunglasses (iconic 2000s) -->
+        <path d="M54 76 L58 73 L80 73 L86 80 L92 73 L114 73 L118 76 L118 85 Q118 90 114 90 L92 90 Q86 84 80 90 L58 90 Q54 90 54 85 Z" fill="#00CFFF" opacity="0.95"/>
+        <line x1="80" y1="73" x2="80" y2="90" stroke="rgba(0,0,0,0.4)" stroke-width="1.5"/>
+        <!-- visor sheen -->
+        <path d="M58 74 L80 74 L80 77 L60 77 Z" fill="white" opacity="0.12"/>
+        <path d="M92 74 L114 74 L112 77 L94 77 Z" fill="white" opacity="0.12"/>
+        <!-- ear left -->
+        <rect x="50" y="76" width="8" height="14" rx="3" fill="#B89060"/>
+        <!-- ear right -->
+        <rect x="114" y="76" width="8" height="14" rx="3" fill="#B89060"/>
+        <!-- earring left (hoop) -->
+        <circle cx="50" cy="89" r="4" fill="none" stroke="#00FF9C" stroke-width="1.5"/>
+        <!-- nose line -->
+        <path d="M82 88 Q86 93 90 88" stroke="#A07850" stroke-width="1" fill="none"/>
+        <!-- flat mouth / smirk -->
+        <path d="M74 102 L82 104 L92 100" stroke="#8A6040" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- chin detail -->
+        <line x1="80" y1="108" x2="80" y2="112" stroke="#A07850" stroke-width="1" opacity="0.4"/>
+      </svg>
+      <div class="char-label">[ CIRCUIT ]</div>
+    </div>
+
+    <!-- VOCALIST (center — focal point) — VOID -->
+    <div class="char-figure" data-name="VOID">
+      <svg width="210" height="370" viewBox="0 0 210 370" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="fx-v">
+            <feGaussianBlur stdDeviation="5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <radialGradient id="aura-v" cx="50%" cy="90%" r="50%">
+            <stop offset="0%" stop-color="#00FF9C" stop-opacity="0.14"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+        </defs>
+
+        <!-- aura -->
+        <ellipse cx="105" cy="330" rx="90" ry="48" fill="url(#aura-v)"/>
+        <!-- ground shadow -->
+        <ellipse cx="105" cy="366" rx="60" ry="6" fill="rgba(0,255,156,0.09)"/>
+
+        <!-- ── SHOES: Air Force / Dunk style ── -->
+        <!-- left shoe -->
+        <path d="M52 318 L52 336 Q52 342 62 342 L96 342 Q106 342 108 334 L108 322 Z" fill="#F5F5F5"/>
+        <path d="M54 322 L106 322 L106 328 L54 328 Z" fill="#ddd"/>
+        <!-- swoosh / stripe detail on left -->
+        <path d="M65 324 Q80 320 98 326" stroke="#aaa" stroke-width="2" fill="none"/>
+        <!-- lace line -->
+        <line x1="60" y1="320" x2="100" y2="320" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- right shoe -->
+        <path d="M102 318 L102 336 Q102 342 112 342 L148 342 Q158 342 160 334 L160 322 Z" fill="#F5F5F5"/>
+        <path d="M104 322 L158 322 L158 328 L104 328 Z" fill="#ddd"/>
+        <path d="M114 324 Q130 320 150 326" stroke="#aaa" stroke-width="2" fill="none"/>
+        <line x1="110" y1="320" x2="152" y2="320" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- ankle -->
+        <rect x="60" y="306" width="38" height="14" fill="#1a1a1a"/>
+        <rect x="112" y="306" width="38" height="14" fill="#1a1a1a"/>
+
+        <!-- ── PANTS: wide-leg dark denim / cargo ── -->
+        <!-- left leg -->
+        <path d="M60 218 L56 318 L102 318 L104 218 Z" fill="#111"/>
+        <!-- right leg -->
+        <path d="M106 218 L152 218 L156 318 L108 318 Z" fill="#0d0d0d"/>
+        <!-- inseam shadow -->
+        <line x1="104" y1="218" x2="104" y2="318" stroke="#000" stroke-width="2"/>
+        <!-- knee crease left -->
+        <path d="M62 270 Q80 266 100 270" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+        <!-- knee crease right -->
+        <path d="M108 270 Q126 266 150 270" stroke="#1a1a1a" stroke-width="1.5" fill="none"/>
+        <!-- cargo pocket — left thigh -->
+        <rect x="62" y="240" width="30" height="36" rx="1" fill="#161616" stroke="#222" stroke-width="1"/>
+        <line x1="62" y1="258" x2="92" y2="258" stroke="#222" stroke-width="1"/>
+        <!-- flag patch -->
+        <rect x="66" y="243" width="12" height="8" fill="#3A5F0B"/>
+        <rect x="66" y="243" width="4" height="8" fill="#2a3010"/>
+        <!-- belt -->
+        <rect x="55" y="214" width="100" height="8" fill="#0a0a0a"/>
+        <rect x="94" y="213" width="22" height="10" rx="1" fill="#222"/>
+        <rect x="99" y="215" width="12" height="6" rx="0.5" fill="#444"/>
+        <line x1="104" y1="215" x2="104" y2="221" stroke="#555" stroke-width="1"/>
+
+        <!-- ── TORSO: long oversized hoodie ── -->
+        <!-- hoodie body -->
+        <path d="M48 118 Q40 122 36 132 L34 222 L176 222 L174 132 Q170 122 162 118 Z" fill="#0e0e0e"/>
+        <!-- hood detail at top -->
+        <path d="M72 118 L72 128 L105 136 L138 128 L138 118 Z" fill="#0a0a0a"/>
+        <!-- front seam -->
+        <line x1="105" y1="136" x2="105" y2="222" stroke="#161616" stroke-width="2"/>
+        <!-- kangaroo pocket -->
+        <path d="M72 192 L72 218 L138 218 L138 192 Q138 186 132 186 L78 186 Q72 186 72 192 Z" fill="#0a0a0a" stroke="#161616" stroke-width="1"/>
+        <!-- drawstring -->
+        <line x1="90" y1="136" x2="84" y2="156" stroke="#333" stroke-width="2"/>
+        <line x1="120" y1="136" x2="126" y2="156" stroke="#333" stroke-width="2"/>
+        <circle cx="84" cy="157" r="3" fill="#222" stroke="#444" stroke-width="1"/>
+        <circle cx="126" cy="157" r="3" fill="#222" stroke="#444" stroke-width="1"/>
+        <!-- left sleeve -->
+        <path d="M34 132 Q14 128 6 148 L10 202 Q14 214 26 216 L42 216 L42 132 Z" fill="#0e0e0e"/>
+        <!-- right sleeve (arm raised, holding mic up) -->
+        <path d="M174 132 Q192 126 200 144 L204 196 Q202 210 190 212 L170 212 L172 132 Z" fill="#0e0e0e"/>
+        <!-- left hand/wrist -->
+        <ellipse cx="18" cy="216" rx="11" ry="9" fill="#C8A878"/>
+        <!-- right hand up -->
+        <ellipse cx="196" cy="210" rx="11" ry="9" fill="#C8A878"/>
+
+        <!-- ── MIC: professional handheld ── -->
+        <g transform="translate(188 150)">
+          <!-- mic body -->
+          <rect x="-5" y="20" width="10" height="52" rx="4" fill="#222"/>
+          <rect x="-4" y="21" width="3" height="50" rx="2" fill="#333" opacity="0.5"/>
+          <!-- mic head (ball) -->
+          <ellipse cx="0" cy="18" rx="12" ry="14" fill="#1a1a1a"/>
+          <ellipse cx="0" cy="18" rx="10" ry="12" fill="none" stroke="#333" stroke-width="1"/>
+          <!-- mic grid lines -->
+          <line x1="-10" y1="12" x2="10" y2="12" stroke="#2a2a2a" stroke-width="1"/>
+          <line x1="-11" y1="18" x2="11" y2="18" stroke="#2a2a2a" stroke-width="1"/>
+          <line x1="-10" y1="24" x2="10" y2="24" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- mic glow ring -->
+          <ellipse cx="0" cy="18" rx="12" ry="14" fill="none" stroke="#00FF9C" stroke-width="0.8" opacity="0.5" filter="url(#fx-v)"/>
+          <!-- cable -->
+          <path d="-5 72 Q-10 90 -8 110" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- ── HEAD: graphic, editorial ── -->
+        <!-- neck -->
+        <rect x="94" y="96" width="22" height="28" fill="#C8A878"/>
+        <!-- face shape — slightly square jaw, editorial -->
+        <path d="M66 56 L66 104 Q66 116 78 118 L105 120 L132 118 Q144 116 144 104 L144 56 Q144 44 105 42 Q66 44 66 56 Z" fill="#C8A878"/>
+        <!-- messy swept hair — 2000s emo/indie -->
+        <path d="M66 64 Q58 38 68 24 Q76 12 94 14 Q86 8 96 4 Q108 0 118 8 Q130 4 140 14 Q152 24 148 44 L144 64 Q130 48 120 56 Q110 44 100 50 Q90 44 80 54 Q70 48 66 64 Z" fill="#111"/>
+        <!-- hair falling over face right side -->
+        <path d="M136 56 L140 72 L134 68 L138 88 L130 80 L128 96" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- hair left side less (asymmetric) -->
+        <path d="M72 60 L68 78" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <!-- eye shadow band — deep, mysterious -->
+        <rect x="62" y="70" width="82" height="28" rx="2" fill="#0a0a0a" opacity="0.88"/>
+        <!-- left eye barely visible — just a slit of green -->
+        <line x1="74" y1="84" x2="92" y2="84" stroke="#00FF9C" stroke-width="1.5" opacity="0.6" filter="url(#fx-v)"/>
+        <!-- right eye — hidden behind hair suggestion -->
+        <line x1="118" y1="83" x2="130" y2="84" stroke="#00FF9C" stroke-width="1" opacity="0.3" filter="url(#fx-v)"/>
+        <!-- nose -->
+        <path d="M100 94 Q104 100 108 96" stroke="#A07850" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- mouth — flat, expressionless -->
+        <line x1="88" y1="108" x2="122" y2="108" stroke="#8A6040" stroke-width="2" stroke-linecap="round"/>
+        <!-- earring left — chunky hoop -->
+        <circle cx="66" cy="94" r="6" fill="none" stroke="#C8A878" stroke-width="2.5"/>
+        <circle cx="66" cy="100" r="3" fill="#888"/>
+        <!-- chain necklace -->
+        <path d="M82 118 Q105 128 128 118" stroke="#666" stroke-width="2.5" fill="none" stroke-dasharray="3 2"/>
+        <!-- pendant -->
+        <rect x="100" y="124" width="10" height="12" rx="1" fill="#222" stroke="#666" stroke-width="1"/>
+        <text x="101" y="134" font-family="monospace" font-size="6" fill="#00FF9C" opacity="0.7">///</text>
+        <!-- hoodie logo on chest -->
+        <text x="78" y="178" font-family="monospace" font-size="10" fill="#00FF9C" opacity="0.25" letter-spacing="2">STATIC</text>
+        <text x="84" y="191" font-family="monospace" font-size="10" fill="#00FF9C" opacity="0.18" letter-spacing="4">VOID</text>
+      </svg>
+      <div class="char-label">[ V O I D ]</div>
+    </div>
+
+    <!-- DRUMMER (right) — CRASH -->
+    <div class="char-figure" data-name="CRASH">
+      <svg width="175" height="340" viewBox="0 0 175 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="fx-d">
+            <feGaussianBlur stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ground shadow -->
+        <ellipse cx="87" cy="337" rx="52" ry="5" fill="rgba(255,0,60,0.07)"/>
+
+        <!-- ── BOOTS: tall combat/Timberland style ── -->
+        <!-- left boot -->
+        <path d="M42 294 L42 336 L82 336 L82 322 L86 294 Z" fill="#1a1208"/>
+        <!-- boot sole -->
+        <rect x="38" y="330" width="48" height="8" rx="2" fill="#0d0d0d"/>
+        <!-- boot laces area -->
+        <rect x="50" y="298" width="24" height="28" fill="#221a08"/>
+        <line x1="62" y1="300" x2="60" y2="326" stroke="#3a2e10" stroke-width="1" stroke-dasharray="2 3"/>
+        <!-- boot hardware eyelets -->
+        <circle cx="55" cy="304" r="2" fill="#666"/>
+        <circle cx="70" cy="304" r="2" fill="#666"/>
+        <circle cx="55" cy="312" r="2" fill="#666"/>
+        <circle cx="70" cy="312" r="2" fill="#666"/>
+        <circle cx="55" cy="320" r="2" fill="#666"/>
+        <circle cx="70" cy="320" r="2" fill="#666"/>
+        <!-- right boot -->
+        <path d="M90 294 L88 322 L132 322 L132 336 L92 336 L92 294 Z" fill="#1a1208"/>
+        <rect x="89" y="330" width="48" height="8" rx="2" fill="#0d0d0d"/>
+        <rect x="100" y="298" width="24" height="28" fill="#221a08"/>
+        <line x1="112" y1="300" x2="110" y2="326" stroke="#3a2e10" stroke-width="1" stroke-dasharray="2 3"/>
+        <circle cx="105" cy="304" r="2" fill="#666"/>
+        <circle cx="120" cy="304" r="2" fill="#666"/>
+        <circle cx="105" cy="312" r="2" fill="#666"/>
+        <circle cx="120" cy="312" r="2" fill="#666"/>
+        <circle cx="105" cy="320" r="2" fill="#666"/>
+        <circle cx="120" cy="320" r="2" fill="#666"/>
+
+        <!-- ── PANTS: military/cargo straight fit ── -->
+        <path d="M48 208 L44 296 L90 296 L92 208 Z" fill="#1a1a1a"/>
+        <path d="M86 208 L132 208 L134 296 L90 296 Z" fill="#161616"/>
+        <!-- military side stripe -->
+        <line x1="48" y1="208" x2="44" y2="296" stroke="#3A5F0B" stroke-width="2" opacity="0.6"/>
+        <line x1="132" y1="208" x2="134" y2="296" stroke="#3A5F0B" stroke-width="2" opacity="0.6"/>
+        <!-- knee line -->
+        <path d="M48 258 Q70 252 90 256" stroke="#222" stroke-width="1.5" fill="none"/>
+        <path d="M92 256 Q112 252 134 258" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+        <!-- cargo pocket -->
+        <rect x="50" y="228" width="28" height="32" rx="1" fill="#111" stroke="#222" stroke-width="1"/>
+        <line x1="50" y1="244" x2="78" y2="244" stroke="#1e1e1e" stroke-width="1"/>
+        <!-- patch/badge on pocket -->
+        <rect x="52" y="230" width="10" height="7" fill="#FF003C" opacity="0.8"/>
+        <text x="53" y="236" font-family="monospace" font-size="5" fill="#000">///</text>
+        <!-- belt -->
+        <rect x="44" y="204" width="90" height="8" fill="#0a0a0a"/>
+        <rect x="80" y="203" width="20" height="10" rx="1" fill="#1a1a1a"/>
+        <rect x="84" y="205" width="12" height="6" fill="#333"/>
+
+        <!-- ── TORSO: oversized military field jacket / MA-1 bomber ── -->
+        <!-- main body -->
+        <path d="M34 112 Q24 118 22 130 L20 212 L158 212 L156 130 Q154 120 144 112 Z" fill="#1c1c1c"/>
+        <!-- bomber rib collar -->
+        <rect x="72" y="108" width="34" height="10" rx="4" fill="#2a2a2a"/>
+        <!-- chest zip -->
+        <line x1="89" y1="118" x2="89" y2="212" stroke="#222" stroke-width="2"/>
+        <!-- left chest morale patch -->
+        <rect x="38" y="132" width="36" height="22" rx="1" fill="#0a0a0a" stroke="#3A5F0B" stroke-width="1"/>
+        <text x="40" y="142" font-family="monospace" font-size="6" fill="#3A5F0B" letter-spacing="1">STATIC</text>
+        <text x="44" y="151" font-family="monospace" font-size="6" fill="#3A5F0B" letter-spacing="2">VOID</text>
+        <!-- right arm patch -->
+        <rect x="120" y="130" width="26" height="16" rx="1" fill="#FF003C" opacity="0.85"/>
+        <text x="122" y="142" font-family="monospace" font-size="9" fill="#000" font-weight="bold">///</text>
+        <!-- left sleeve (arm low with stick) -->
+        <path d="M20 130 Q4 128 -2 146 L4 196 Q6 208 18 210 L36 210 L36 130 Z" fill="#1c1c1c"/>
+        <!-- right sleeve (arm raised with stick) -->
+        <path d="M156 130 Q170 124 176 140 L178 188 Q176 204 164 206 L148 206 L150 130 Z" fill="#1c1c1c"/>
+        <!-- rib hem at bottom -->
+        <rect x="20" y="205" width="138" height="10" rx="3" fill="#222"/>
+        <!-- rib lines on hem -->
+        <line x1="22" y1="208" x2="156" y2="208" stroke="#2a2a2a" stroke-width="1"/>
+        <line x1="22" y1="211" x2="156" y2="211" stroke="#2a2a2a" stroke-width="1"/>
+        <!-- left hand -->
+        <ellipse cx="8" cy="210" rx="10" ry="8" fill="#C8A878"/>
+        <!-- right hand -->
+        <ellipse cx="174" cy="200" rx="10" ry="8" fill="#C8A878"/>
+        <!-- drumstick left (pointing down) -->
+        <rect x="4" y="208" width="5" height="56" rx="2" fill="#D4A870" transform="rotate(15 6 208)"/>
+        <ellipse cx="6" cy="265" rx="5" ry="4" fill="#B89050" transform="rotate(15 6 208)"/>
+        <!-- drumstick right (angled up) -->
+        <rect x="166" y="160" width="5" height="56" rx="2" fill="#D4A870" transform="rotate(-40 168 180)"/>
+        <ellipse cx="168" cy="167" rx="5" ry="4" fill="#B89050" transform="rotate(-40 168 180)"/>
+
+        <!-- ── HEAD: balaclava/mask + cap ── -->
+        <!-- balaclava covers neck + lower face -->
+        <rect x="72" y="90" width="34" height="36" fill="#111"/>
+        <!-- full balaclava head coverage -->
+        <ellipse cx="89" cy="68" rx="38" ry="42" fill="#111"/>
+        <!-- tactical cap on top -->
+        <ellipse cx="89" cy="36" rx="40" ry="14" fill="#1a1a1a"/>
+        <!-- cap bill (flat brim) -->
+        <rect x="50" y="44" width="78" height="8" rx="1" fill="#0a0a0a"/>
+        <!-- cap band embroidery -->
+        <rect x="68" y="46" width="44" height="4" fill="#111"/>
+        <text x="70" y="50" font-family="monospace" font-size="5" fill="#3A5F0B" letter-spacing="3">SV///</text>
+        <!-- cap top seam panels -->
+        <line x1="89" y1="24" x2="89" y2="44" stroke="#222" stroke-width="1"/>
+        <line x1="68" y1="26" x2="72" y2="44" stroke="#222" stroke-width="1"/>
+        <line x1="110" y1="26" x2="106" y2="44" stroke="#222" stroke-width="1"/>
+        <!-- balaclava eye slit — RED -->
+        <rect x="60" y="60" width="58" height="14" rx="2" fill="#FF003C" opacity="0.85" filter="url(#fx-d)"/>
+        <!-- visor shine -->
+        <rect x="62" y="61" width="54" height="4" rx="1" fill="white" opacity="0.08"/>
+        <!-- eye glow -->
+        <line x1="64" y1="67" x2="78" y2="67" stroke="white" stroke-width="1" opacity="0.3"/>
+        <line x1="100" y1="67" x2="114" y2="67" stroke="white" stroke-width="1" opacity="0.3"/>
+        <!-- nose/mouth area of balaclava (fabric folds) -->
+        <line x1="80" y1="80" x2="100" y2="80" stroke="#1e1e1e" stroke-width="1.5"/>
+        <line x1="78" y1="86" x2="102" y2="86" stroke="#1e1e1e" stroke-width="1"/>
+        <!-- neck of balaclava / collar -->
+        <rect x="68" y="100" width="46" height="14" rx="3" fill="#111"/>
+        <line x1="70" y1="104" x2="112" y2="104" stroke="#1e1e1e" stroke-width="1"/>
+        <line x1="70" y1="108" x2="112" y2="108" stroke="#1e1e1e" stroke-width="1"/>
+      </svg>
+      <div class="char-label">[ C R A S H ]</div>
+    </div>
+
+  </div>
+
+  <!-- Hero text -->
+  <div class="hero-content" style="position:relative; z-index:10; text-align:center; margin-top:40px;">
+    <div class="hero-tag">SIGNAL INTERCEPTED — UNCLASSIFIED</div>
+    <div class="hero-title">
+      STATIC
+      <span class="glitch-layer-r" aria-hidden="true">STATIC</span>
+      <span class="glitch-layer-b" aria-hidden="true">STATIC</span>
+    </div>
+    <div class="hero-title" style="color: var(--neon);">
+      VOID
+      <span class="glitch-layer-r" aria-hidden="true">VOID</span>
+      <span class="glitch-layer-b" aria-hidden="true">VOID</span>
+    </div>
+    <div class="hero-subtitle">
+      "You were not supposed to find this."<span>_</span>
+    </div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="scroll-hint">
+    <span>SCROLL</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ==========================================
+     TICKER
+========================================== -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-inner">
+    <span>STATIC_VOID</span>
+    <span>///</span>
+    <span>UNKNOWN ORIGIN</span>
+    <span>///</span>
+    <span>SIGNAL DETECTED</span>
+    <span>///</span>
+    <span>ARE THEY HUMAN?</span>
+    <span>///</span>
+    <span>FILE: CORRUPTED</span>
+    <span>///</span>
+    <span>STATIC_VOID</span>
+    <span>///</span>
+    <span>UNKNOWN ORIGIN</span>
+    <span>///</span>
+    <span>SIGNAL DETECTED</span>
+    <span>///</span>
+    <span>ARE THEY HUMAN?</span>
+    <span>///</span>
+    <span>FILE: CORRUPTED</span>
+    <span>///</span>
+    <span>STATIC_VOID</span>
+    <span>///</span>
+    <span>UNKNOWN ORIGIN</span>
+    <span>///</span>
+    <span>SIGNAL DETECTED</span>
+    <span>///</span>
+    <span>ARE THEY HUMAN?</span>
+    <span>///</span>
+    <span>FILE: CORRUPTED</span>
+    <span>///</span>
+  </div>
+</div>
+
+<!-- ==========================================
+     LORE / STORY SECTION
+========================================== -->
+<section id="lore">
+  <div class="lore-container">
+    <div class="section-label reveal">DECLASSIFIED ARCHIVE — PARTIAL RECOVERY</div>
+
+    <div class="lore-file reveal" data-id="FILE_001.TXT — RECOVERED 03/██/████">
+      <p class="lore-text">
+        <strong>STATIC_VOID</strong> was not formed. It was <span class="highlight">discovered</span>.<br><br>
+        In <span class="redacted" title="hover to reveal">████</span>, a signal was intercepted by researchers at <span class="redacted">█████ Research Station</span> in <span class="redacted">███████</span>. The audio was unlike anything on record — structured, melodic, yet entirely non-human in origin.
+        <br><br>
+        When analyzed, the waveforms contained embedded <span class="highlight">visual data</span>. Three figures. Motionless. Staring.
+      </p>
+    </div>
+
+    <div class="lore-file reveal" data-id="FILE_002.TXT — [DATA PARTIALLY CORRUPTED]">
+      <p class="lore-text">
+        Nobody knows who built them.<br>
+        Nobody knows if "built" is even the right word.<br><br>
+        Internal logs recovered from the <span class="redacted">███ Server</span> show a series of conversations — structured like interviews — between an unknown AI system and three entities identifying themselves as <strong>VOID</strong>, <strong>CIRCUIT</strong>, and <strong>CRASH</strong>.<br><br>
+        <span class="highlight">They spoke about music. About silence. About being watched.</span><br><br>
+        <span class="corrupt-text">ERR_DECODE // SEGMENT 7-F MISSING // ATTEMPTING RECOVERY…</span>
+      </p>
+    </div>
+
+    <div class="lore-file reveal" data-id="FILE_003.TXT — EYES ONLY">
+      <p class="lore-text">
+        The music was never submitted for release.<br>
+        It was <span class="highlight">leaked</span>.<br><br>
+        Sources inside the <span class="redacted">██████ Project</span> suggest the three entities became aware they were being studied. That they <em>wanted</em> to be found.<br><br>
+        This website is not a launch page.<br>
+        <strong>This is contact.</strong>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==========================================
+     MEMBERS SECTION
+========================================== -->
+<section id="members">
+  <div style="max-width:1100px; margin: 0 auto;">
+    <div class="section-label reveal">ENTITY PROFILES — CLASSIFICATION PENDING</div>
+    <div class="members-grid">
+
+      <!-- VOID -->
+      <div class="member-card reveal">
+        <div class="member-id">ENTITY_01 // VOCAL_UNIT</div>
+        <div class="member-avatar">
+          <!-- VOID avatar — editorial flat head -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- face -->
+            <path d="M16 28 L16 58 Q16 68 26 70 L40 72 L54 70 Q64 68 64 58 L64 28 Q64 18 40 16 Q16 18 16 28 Z" fill="#C8A878"/>
+            <!-- hair block — swept over one side -->
+            <path d="M16 32 Q12 12 22 6 Q30 2 40 4 Q52 2 60 8 Q68 16 64 32 Q56 18 50 22 Q42 14 34 20 Q26 14 20 22 Z" fill="#111"/>
+            <!-- hair strand over right face side -->
+            <path d="M58 30 L62 44 L56 40 L60 56" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <!-- eye shadow band -->
+            <rect x="12" y="32" width="56" height="20" rx="1" fill="#0a0a0a" opacity="0.9"/>
+            <!-- eye slit glow -->
+            <line x1="18" y1="42" x2="34" y2="42" stroke="#00FF9C" stroke-width="1.5" opacity="0.7"/>
+            <!-- mouth line -->
+            <line x1="28" y1="62" x2="52" y2="62" stroke="#8A6040" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- earring -->
+            <circle cx="16" cy="50" r="4" fill="none" stroke="#C8A878" stroke-width="2"/>
+            <circle cx="16" cy="54" r="2" fill="#888"/>
+          </svg>
+        </div>
+        <div class="member-name">VOID</div>
+        <div class="member-role">// VOCALIST + VISIONARY</div>
+        <p class="member-bio">Face partially obscured. Voice measured at frequencies outside human vocal range. The only member who has ever spoken publicly — once — in a 14-second audio clip with no attributed source. What they said has not been disclosed.</p>
+        <div class="member-status">UNVERIFIED — ORIGIN UNKNOWN</div>
+      </div>
+
+      <!-- CIRCUIT -->
+      <div class="member-card reveal">
+        <div class="member-id">ENTITY_02 // INSTRUMENT_UNIT</div>
+        <div class="member-avatar">
+          <!-- CIRCUIT avatar — wraparound visor head -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- face -->
+            <path d="M14 26 L14 58 Q14 68 26 70 L40 72 L54 70 Q66 68 66 58 L66 26 Q66 16 40 14 Q14 16 14 26 Z" fill="#C8A878"/>
+            <!-- flat top hair -->
+            <rect x="10" y="10" width="60" height="22" rx="2" fill="#0a0a0a"/>
+            <rect x="10" y="24" width="60" height="6" fill="#0a0a0a"/>
+            <!-- side fade -->
+            <rect x="10" y="26" width="8" height="36" fill="#0a0a0a"/>
+            <rect x="62" y="26" width="8" height="36" fill="#0a0a0a"/>
+            <!-- wraparound visor sunglasses — wide -->
+            <path d="M12 34 L14 31 L38 30 L40 36 L42 30 L66 31 L68 34 L68 42 Q68 46 64 46 L42 46 Q40 42 38 46 L16 46 Q12 46 12 42 Z" fill="#00CFFF" opacity="0.92"/>
+            <line x1="38" y1="30" x2="38" y2="46" stroke="rgba(0,0,0,0.35)" stroke-width="1.5"/>
+            <!-- shine -->
+            <rect x="14" y="31" width="22" height="3" rx="1" fill="white" opacity="0.14"/>
+            <!-- earpiece tech dot -->
+            <circle cx="10" cy="40" r="3" fill="#00FF9C" opacity="0.9"/>
+            <!-- nose -->
+            <path d="M36 52 Q40 56 44 52" stroke="#A07850" stroke-width="1.5" fill="none"/>
+            <!-- straight mouth -->
+            <line x1="30" y1="62" x2="50" y2="62" stroke="#8A6040" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="member-name">CIRCUIT</div>
+        <div class="member-role">// GUITAR + SYNTHESIS</div>
+        <p class="member-bio">Body augmented with embedded hardware. Fingers can interface directly with guitar electronics. Has been photographed (blurred) in seven different countries simultaneously. Technical specifications of the augmentations: classified.</p>
+        <div class="member-status">ACTIVE — LOCATION MULTIPLE</div>
+      </div>
+
+      <!-- CRASH -->
+      <div class="member-card reveal">
+        <div class="member-id">ENTITY_03 // PERCUSSION_UNIT</div>
+        <div class="member-avatar">
+          <!-- CRASH avatar — balaclava + cap -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="fx-da">
+                <feGaussianBlur stdDeviation="2" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- balaclava -->
+            <ellipse cx="40" cy="46" rx="28" ry="30" fill="#111"/>
+            <!-- cap -->
+            <ellipse cx="40" cy="22" rx="30" ry="10" fill="#1a1a1a"/>
+            <!-- flat brim -->
+            <rect x="10" y="28" width="60" height="6" rx="1" fill="#0a0a0a"/>
+            <!-- cap text -->
+            <text x="22" y="34" font-family="monospace" font-size="5" fill="#3A5F0B" letter-spacing="2">SV///</text>
+            <!-- seam -->
+            <line x1="40" y1="14" x2="40" y2="30" stroke="#222" stroke-width="1"/>
+            <!-- balaclava eye slit — red glowing -->
+            <rect x="18" y="38" width="44" height="10" rx="2" fill="#FF003C" opacity="0.85" filter="url(#fx-da)"/>
+            <rect x="20" y="39" width="40" height="3" rx="1" fill="white" opacity="0.07"/>
+            <!-- lower face fabric folds -->
+            <line x1="24" y1="56" x2="56" y2="56" stroke="#1e1e1e" stroke-width="1.5"/>
+            <line x1="22" y1="62" x2="58" y2="62" stroke="#1e1e1e" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="member-name">CRASH</div>
+        <div class="member-role">// DRUMS + RHYTHM ARCHITECTURE</div>
+        <p class="member-bio">Never seen without the helmet. The only consistent physical marker across all alleged sightings. When asked to remove it in the recovered interview transcripts, the response was three minutes of silence followed by: "This is my face."</p>
+        <div class="member-status">UNCONFIRMED — MONITORING ACTIVE</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================
+     AUDIO / SIGNAL SECTION
+========================================== -->
+<section id="audio-section">
+  <div class="audio-container reveal">
+    <div class="section-label" style="justify-content:center; text-align:center;">INTERCEPTED TRANSMISSION — PLAY AT RISK</div>
+    <div class="audio-title">SIGNAL<br>FOUND</div>
+    <div class="audio-subtitle">FREQUENCY: UNKNOWN // ORIGIN: UNKNOWN // DATE: UNKNOWN</div>
+
+    <!-- Visualizer bars -->
+    <div class="visualizer" id="visualizer">
+      <!-- Bars generated by JS -->
+    </div>
+
+    <button class="play-btn" id="playBtn" aria-label="Play audio teaser">
+      ▶ PLAY
+    </button>
+
+    <p class="audio-note">WARNING: Audio may contain embedded data. Listen at your own discretion.</p>
+  </div>
+</section>
+
+<!-- ==========================================
+     INTERACTIVE / SECRETS SECTION
+========================================== -->
+<section id="secrets">
+  <div class="secrets-container reveal">
+    <div class="section-label">TERMINAL ACCESS — RESTRICTED</div>
+
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <div class="t-dot"></div>
+        <div class="t-dot"></div>
+        <div class="t-dot"></div>
+        <span class="terminal-title">static_void_decrypt.exe — root@sv-server</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <p class="t-line dim">root@sv-server:~$ ./decrypt --file signals_archive.enc</p>
+        <p class="t-line" style="margin-top:8px;">Initializing decryption protocol…</p>
+        <p class="t-line">[████████████████░░░░] 78% — INTEGRITY CHECK FAILED</p>
+        <p class="t-line red" style="margin-top:8px;">ERR: File contents modified post-capture</p>
+        <p class="t-line red">ERR: Timestamp inconsistency detected (+37 years?)</p>
+        <p class="t-line" style="margin-top:8px;">Partial recovery initiated…</p>
+        <p class="t-line" style="margin-top:8px; color: var(--offwhite);">RECOVERED FRAGMENT:</p>
+        <p class="t-line white" style="margin-top:4px; font-size:15px;">"We have always been here.</p>
+        <p class="t-line white">&nbsp;You just weren't listening."</p>
+        <p class="t-line white" style="margin-bottom:8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— Attribution: <span style="color:var(--red-glitch);">REDACTED</span></p>
+        <p class="t-line dim" style="margin-top:16px;" id="interactive-hint">root@sv-server:~$ <span class="t-cursor"></span></p>
+        <p class="t-line dim" style="margin-top:8px; font-size:10px;">[TIP: Try typing "who are you?" below]</p>
+      </div>
+    </div>
+
+    <!-- Fake input for interaction -->
+    <div style="margin-top:2px; border:1px solid rgba(0,255,156,.1); background:#050505; display:flex;">
+      <span style="padding:12px 16px; font-size:11px; color:var(--neon); white-space:nowrap;">root@sv$</span>
+      <input id="terminal-input" type="text" placeholder="enter command…"
+        style="flex:1; background:transparent; border:none; outline:none; color:var(--offwhite); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.08em; padding:12px 8px; cursor:none;"
+      />
+    </div>
+
+  </div>
+
+  <!-- Hidden easter egg: click a specific spot -->
+  <button class="secret-btn" id="secret-spot" style="bottom:60px; right:60px;" aria-label="hidden"></button>
+
+</section>
+
+<!-- Hidden message popup (Easter egg) -->
+<div id="hidden-msg">
+  <p>THEY KNOW YOU'RE HERE.</p>
+  <small>signal trace initiated // 3 entities detected // your location is logged</small>
+  <button id="close-msg">DISCONNECT</button>
+</div>
+
+<!-- ==========================================
+     FINALE / COMING SOON
+========================================== -->
+<section id="finale">
+  <!-- Glowing lines -->
+  <div class="finale-lines">
+    <div class="finale-line"></div>
+    <div class="finale-line"></div>
+    <div class="finale-line"></div>
+  </div>
+  <div class="finale-glow"></div>
+
+  <div class="finale-content">
+    <p class="finale-pre">TRANSMISSION ENDS // WHAT COMES NEXT IS CLASSIFIED</p>
+    <div class="coming-soon">COMING<br>SOON</div>
+    <p class="finale-sub">THIS IS ONLY THE BEGINNING.</p>
+    <p class="finale-sub2">static_void.signal // estimated arrival: ████</p>
+
+    <!-- Subscribe -->
+    <div class="subscribe-form">
+      <input class="subscribe-input" type="email" placeholder="enter email to receive the signal…" />
+      <button class="subscribe-btn">INTERCEPT</button>
+    </div>
+  </div>
+
+  <footer class="finale-footer">
+    <span>© STATIC_VOID — ALL RIGHTS WITHHELD</span>
+    <a href="#hero">↑ RETURN TO TOP</a>
+    <span>DO NOT SHARE THIS URL</span>
+  </footer>
+</section>
+
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+<script>
+  /* ==========================================
+     CUSTOM CURSOR
+  ========================================== */
+  const cursor = document.getElementById('cursor');
+  const trail  = document.getElementById('cursor-trail');
+  let mx = 0, my = 0, tx = 0, ty = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+
+  // Smooth trail
+  function animateTrail() {
+    tx += (mx - tx) * .15;
+    ty += (my - ty) * .15;
+    trail.style.left = tx + 'px';
+    trail.style.top  = ty + 'px';
+    requestAnimationFrame(animateTrail);
+  }
+  animateTrail();
+
+  /* ==========================================
+     LOADER
+  ========================================== */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+    }, 2800);
+  });
+
+  /* ==========================================
+     SCROLL REVEAL
+  ========================================== */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => observer.observe(r));
+
+  /* ==========================================
+     VISUALIZER BARS — setup
+  ========================================== */
+  const vizEl = document.getElementById('visualizer');
+  const BAR_COUNT = 32;
+  const bars = [];
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const b = document.createElement('div');
+    b.className = 'viz-bar';
+    b.style.setProperty('--d', (.3 + Math.random() * .6) + 's');
+    b.style.setProperty('--h', (20 + Math.random() * 60) + 'px');
+    b.style.height = '6px';
+    vizEl.appendChild(b);
+    bars.push(b);
+  }
+
+  /* ==========================================
+     AUDIO PLAYER (Web Audio API — generated tone)
+  ========================================== */
+  let audioCtx = null;
+  let isPlaying = false;
+  let nodes = [];
+  const playBtn = document.getElementById('playBtn');
+
+  function buildAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Master gain
+    const master = audioCtx.createGain();
+    master.gain.setValueAtTime(0.18, audioCtx.currentTime);
+    master.connect(audioCtx.destination);
+
+    // Drone oscillator 1 (low)
+    const osc1 = audioCtx.createOscillator();
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(55, audioCtx.currentTime);
+    osc1.frequency.linearRampToValueAtTime(58, audioCtx.currentTime + 8);
+    const g1 = audioCtx.createGain(); g1.gain.value = .4;
+    osc1.connect(g1); g1.connect(master);
+    osc1.start();
+
+    // Drone oscillator 2 (pad)
+    const osc2 = audioCtx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(110, audioCtx.currentTime);
+    const g2 = audioCtx.createGain(); g2.gain.value = .25;
+    osc2.connect(g2); g2.connect(master);
+    osc2.start();
+
+    // High eerie tone
+    const osc3 = audioCtx.createOscillator();
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(880, audioCtx.currentTime);
+    osc3.frequency.exponentialRampToValueAtTime(660, audioCtx.currentTime + 12);
+    const g3 = audioCtx.createGain(); g3.gain.value = .06;
+    osc3.connect(g3); g3.connect(master);
+    osc3.start();
+
+    // Noise (static)
+    const bufferSize = audioCtx.sampleRate * 2;
+    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    noise.loop = true;
+    const noiseGain = audioCtx.createGain(); noiseGain.gain.value = .03;
+    const biquad = audioCtx.createBiquadFilter();
+    biquad.type = 'bandpass'; biquad.frequency.value = 800; biquad.Q.value = .5;
+    noise.connect(biquad); biquad.connect(noiseGain); noiseGain.connect(master);
+    noise.start();
+
+    nodes = [osc1, osc2, osc3, noise, master];
+    return master;
+  }
+
+  function startVisualizer() {
+    bars.forEach(b => {
+      b.classList.add('active');
+      b.style.setProperty('--d', (.25 + Math.random() * .7) + 's');
+      b.style.setProperty('--h', (10 + Math.random() * 70) + 'px');
+    });
+    // Randomly reanimate bars
+    setInterval(() => {
+      bars.forEach(b => {
+        b.style.setProperty('--d', (.2 + Math.random() * .8) + 's');
+        b.style.setProperty('--h', (8 + Math.random() * 72) + 'px');
+      });
+    }, 800);
+  }
+
+  function stopVisualizer() {
+    bars.forEach(b => {
+      b.classList.remove('active');
+      b.style.height = '6px';
+    });
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (!isPlaying) {
+      if (!audioCtx) buildAudio();
+      else audioCtx.resume();
+      isPlaying = true;
+      playBtn.textContent = '■ STOP';
+      startVisualizer();
+    } else {
+      audioCtx && audioCtx.suspend();
+      isPlaying = false;
+      playBtn.textContent = '▶ PLAY';
+      stopVisualizer();
+    }
+  });
+
+  /* ==========================================
+     TERMINAL INTERACTION
+  ========================================== */
+  const termInput = document.getElementById('terminal-input');
+  const termBody  = document.getElementById('terminal-body');
+
+  const responses = {
+    'who are you':   `<p class="t-line" style="margin-top:8px; color:var(--neon);">&gt; We are the signal between stations.</p><p class="t-line" style="color:var(--neon);">&gt; We are static. We are void.</p>`,
+    'where are you': `<p class="t-line" style="margin-top:8px; color:var(--neon);">&gt; Everywhere. Everywhere you cannot tune to.</p>`,
+    'hello':         `<p class="t-line" style="margin-top:8px; color:var(--neon);">&gt; We have been waiting for you specifically.</p>`,
+    'when':          `<p class="t-line" style="margin-top:8px; color:var(--neon);">&gt; Time does not apply to us in the way you think.</p>`,
+    'help':          `<p class="t-line dim" style="margin-top:8px;">&gt; Commands: who are you / where are you / when / hello / are you human</p>`,
+    'are you human': `<p class="t-line" style="margin-top:8px; color:var(--red-glitch);">&gt; [10.3 second pause]</p><p class="t-line" style="color:var(--red-glitch);">&gt; Define "human."</p>`,
+  };
+
+  termInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = termInput.value.trim().toLowerCase().replace(/[?!.]/g, '');
+      if (!val) return;
+
+      // Add user input line
+      const userLine = document.createElement('p');
+      userLine.className = 't-line dim';
+      userLine.style.marginTop = '8px';
+      userLine.innerHTML = `root@sv-server:~$ <span style="color:var(--offwhite)">${termInput.value}</span>`;
+      termBody.appendChild(userLine);
+
+      // Find response
+      const key = Object.keys(responses).find(k => val.includes(k));
+      const resp = key ? responses[key] : `<p class="t-line red" style="margin-top:4px;">&gt; ERR: Command not recognized. Try "help".</p>`;
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = resp;
+      [...tempDiv.children].forEach(c => termBody.appendChild(c));
+
+      termInput.value = '';
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+  });
+
+  /* ==========================================
+     EASTER EGG — Secret click spot
+  ========================================== */
+  const secretSpot = document.getElementById('secret-spot');
+  const hiddenMsg  = document.getElementById('hidden-msg');
+  const closeMsg   = document.getElementById('close-msg');
+
+  secretSpot.addEventListener('click', () => {
+    hiddenMsg.classList.add('show');
+  });
+  closeMsg.addEventListener('click', () => {
+    hiddenMsg.classList.remove('show');
+  });
+
+  // Also: clicking the redacted spans reveals text briefly
+  document.querySelectorAll('.redacted').forEach(span => {
+    span.addEventListener('mouseenter', () => {
+      span.style.background = 'var(--red-glitch)';
+      span.style.color = 'var(--black)';
+    });
+    span.addEventListener('mouseleave', () => {
+      span.style.background = 'var(--offwhite)';
+      span.style.color = 'var(--offwhite)';
+    });
+  });
+
+  /* ==========================================
+     GLITCH EFFECT ON SCROLL (subtle)
+  ========================================== */
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const delta = Math.abs(scrollY - lastScroll);
+    if (delta > 80) {
+      document.body.style.filter = 'hue-rotate(5deg)';
+      setTimeout(() => document.body.style.filter = '', 120);
+    }
+    lastScroll = scrollY;
+  }, { passive: true });
+
+  /* ==========================================
+     SUBSCRIBE BUTTON
+  ========================================== */
+  const subBtn   = document.querySelector('.subscribe-btn');
+  const subInput = document.querySelector('.subscribe-input');
+  subBtn.addEventListener('click', () => {
+    if (subInput.value.includes('@')) {
+      subBtn.textContent = 'SIGNAL LOCKED';
+      subBtn.style.background = '#3A5F0B';
+      subInput.value = '';
+      subInput.placeholder = 'transmission registered…';
+    } else {
+      subInput.style.borderColor = 'var(--red-glitch)';
+      setTimeout(() => subInput.style.borderColor = '', 800);
+    }
+  });
+
+  /* ==========================================
+     KONAMI CODE EASTER EGG
+  ========================================== */
+  const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let kIdx = 0;
+  document.addEventListener('keydown', e => {
+    if (e.key === konami[kIdx]) {
+      kIdx++;
+      if (kIdx === konami.length) {
+        kIdx = 0;
+        document.body.style.filter = 'invert(1) hue-rotate(90deg)';
+        setTimeout(() => {
+          document.body.style.filter = '';
+          const msg = document.createElement('div');
+          msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#00FF9C;color:#000;font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:.3em;padding:12px 28px;z-index:20000;';
+          msg.textContent = '// VOID SEES YOU //';
+          document.body.appendChild(msg);
+          setTimeout(() => msg.remove(), 3000);
+        }, 400);
+      }
+    } else {
+      kIdx = 0;
+    }
+  });
+</script>
+</body>
+</html>
